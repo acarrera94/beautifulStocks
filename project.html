@@ -19,13 +19,16 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 
-    <!--JAVASCRIPT AND JQUERY-->
+    <!--JQUERY-->
     <script
       src="http://code.jquery.com/jquery-3.2.1.min.js"
       integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
       crossorigin="anonymous">
     </script>
-    <script src="node_modules/chartjs/dist/Chart.js"></script>
+    
+    <!--Chart script-->
+    
+    <!--script src="node_modules/chartjs/dist/Chart.js"></script-->
 
 
 
@@ -47,26 +50,48 @@
         url : myurl,
         dataType : "json",
         success : function(parsed_json) {
-            var open = parsed_json['Time Series (Daily)'][dateString]["1. open"]
-            var high = parsed_json['Time Series (Daily)'][dateString]["2. high"]
-            var low = parsed_json['Time Series (Daily)'][dateString]["3. low"]
-            var closeVal = parsed_json['Time Series (Daily)'][dateString]["4. close"]
-            var volume = parsed_json['Time Series (Daily)'][dateString]["5. volume"]
-            everything = "<ul>";
-            everything += "<li>Open: "+open;
-            everything += "<li>High: "+high;
-            everything += "<li>Low: "+low;
-            everything += "<li>Close: "+closeVal;
-            everything += "<li>Volume: "+volume;
-            everything += "</ul>";
-            $("#stockData").html(everything);
+            var loopDate = new Date("2017-10-04");
+            var graphData = [];
+            
+            for (i = 0; i < 30; i++ ){
+                //loopDate.setDate(loopDate.getdate() - 1)  //THIS HAS BEEN DEPRECATED NEED NEW SOLUTION
+                dateString = loopDate.toISOString().split('T')[0];
+                console.log(dateString);
+                console.log(myurl);
+                var open = parsed_json['Time Series (Daily)'][dateString]["1. open"]
+                var high = parsed_json['Time Series (Daily)'][dateString]["2. high"]
+                var low = parsed_json['Time Series (Daily)'][dateString]["3. low"]
+                var closeVal = parsed_json['Time Series (Daily)'][dateString]["4. close"]
+                var volume = parsed_json['Time Series (Daily)'][dateString]["5. volume"]
+                var dataToPush = {
+                    'date': dateString,
+                    'openAmt' : open,
+                    'highAmt': high,
+                    'lowAmt': low,
+                    'closeValue': closeVal,
+                    'volume': volume
+                };
+                graphData.push(dataToPush);
+                console.log(dataToPush);
+                console.log(graphData);
+                
+                var everything = "<ul>"
+                everything += "<li>Open: "+open;
+                everything += "<li>High: "+high;
+                everything += "<li>Low: "+low;
+                everything += "<li>Close: "+closeVal;
+                everything += "<li>Volume: "+volume;
+                everything += "</ul>";
+                $("#stockData").html(everything);
+                
+           } //End of For Loop
         } //End of AJAX-SUCCESS
       }); //End of AJAX
     });
   });
 </script>
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 
 
 </head>
@@ -80,12 +105,31 @@ Enter A Stock Ticker: <br/>
 </form>
 
 <div class="w3-display-container" id="stockData">No info</div>
-
-
-
-
-
-
+    
+    
+<canvas id="myChart" width="100px" height="80px"></canvas>
+    
+    <!--The script for the chart has to be AFTER the chart is initialized-->
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            //Type of chart we want to create
+            type: 'line',
+            
+            //Data for the dataset
+            data: {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: [{
+                label: "My First dataset",
+                backgroundColor: 'rgb(255, 99, 132)',
+                bordercolor: 'rgb(255, 99, 132)',
+                data: [10,10,10,10,10,10,10],
+                }]
+            },
+            //Configuration options
+            options:{}
+        });
+    </script> <!--End of chart script-->
 
 
 </body>
