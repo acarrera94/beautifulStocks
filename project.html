@@ -27,7 +27,7 @@
     </script>
     
     <!--Joda Time-->
-    <script src="js-joda.min.js"></script>
+    <script src="node_modules/js-joda/dist/js-joda.min.js"></script>
     
     <!--Chart script-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
@@ -42,32 +42,34 @@
       var value = $("#tickerField").val().toUpperCase();
       console.log(value);
       e.preventDefault();
-      var dateString = "2017-10-02";
       var APIkey = "JDLFW3LUQKIPCLUZ";
       var myurl= "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY";
       myurl += "&symbol=" + value;
       myurl += "&apikey=" + APIkey;
       console.log(myurl);
-
+      var LocalDate = JSJoda.LocalDate;
+      console.log("JS JODA DATE " + LocalDate.now())
+        
+        
       $.ajax({
         url : myurl,
         dataType : "json",
         success : function(parsed_json) {
-            var loopDate = new Date("2017-10-04");
+            var loopDate = LocalDate.now();
             var graphData = [];
-            
-            for (i = 0; i < 30; i++ ){
-                //loopDate.setDate(loopDate.getdate() - 1)  //THIS HAS BEEN DEPRECATED NEED NEW SOLUTION
-                dateString = loopDate.toISOString().split('T')[0];
-                console.log(dateString);
+            var numberOfDays = 5
+            for (i = 0; i < numberOfDays; i++ ){
+                loopDate = loopDate.minusDays(1); 
+                console.log("DAYS minus 1: " + loopDate);
+                //console.log(dateString);
                 console.log(myurl);
-                var open = parsed_json['Time Series (Daily)'][dateString]["1. open"]
-                var high = parsed_json['Time Series (Daily)'][dateString]["2. high"]
-                var low = parsed_json['Time Series (Daily)'][dateString]["3. low"]
-                var closeVal = parsed_json['Time Series (Daily)'][dateString]["4. close"]
-                var volume = parsed_json['Time Series (Daily)'][dateString]["5. volume"]
+                var open = parsed_json['Time Series (Daily)'][loopDate.toString()]["1. open"]
+                var high = parsed_json['Time Series (Daily)'][loopDate.toString()]["2. high"]
+                var low = parsed_json['Time Series (Daily)'][loopDate.toString()]["3. low"]
+                var closeVal = parsed_json['Time Series (Daily)'][loopDate.toString()]["4. close"]
+                var volume = parsed_json['Time Series (Daily)'][loopDate.toString()]["5. volume"]
                 var dataToPush = {
-                    'date': dateString,
+                    'date': loopDate.toString(),
                     'openAmt' : open,
                     'highAmt': high,
                     'lowAmt': low,
