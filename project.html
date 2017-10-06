@@ -25,25 +25,29 @@
       integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
       crossorigin="anonymous">
     </script>
-    
+
     <!--Joda Time-->
     <!--CHEATSHEET:  https://github.com/js-joda/js-joda/blob/HEAD/CheatSheet.md-->
     <script src="node_modules/js-joda/dist/js-joda.min.js"></script>
-    
+
     <!--Chart script-->
     <!--script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script-->
     <script src="node_modules/chart.js/dist/Chart.js"></script>
 
-    
+    <script src="utils.js"></script>
 
 
 <script>
+var graphData = [];
   $(document).ready(function() {
+
+
 
     $("#tickerButton").click(function(e){
       var value = $("#tickerField").val().toUpperCase();
       console.log(value);
       e.preventDefault();
+      $("#stockData").html("loading...");
       var APIkey = "JDLFW3LUQKIPCLUZ";
       var myurl= "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY";
       myurl += "&symbol=" + value;
@@ -51,17 +55,17 @@
       console.log(myurl);
       var LocalDate = JSJoda.LocalDate;
       console.log("JS JODA DATE " + LocalDate.now())
-        
-        
+
+
       $.ajax({
         url : myurl,
         dataType : "json",
         success : function(parsed_json) {
             var loopDate = LocalDate.now();
-            var graphData = [];
-            var numberOfDays = 2
+
+            var numberOfDays = 3;
             for (i = 0; i < numberOfDays; i++ ){
-                loopDate = loopDate.minusDays(1); 
+                loopDate = loopDate.minusDays(1);
                 console.log("DAYS minus 1: " + loopDate);
                 //console.log(dateString);
                 console.log(myurl);
@@ -79,24 +83,18 @@
                     'volume': volume
                 };
                 graphData.push(dataToPush);
-                console.log(dataToPush);
+                console.log("data to push=  "+ dataToPush);
                 console.log(graphData);
-                
-                var everything = "<ul>"
-                everything += "<li>Open: "+open;
-                everything += "<li>High: "+high;
-                everything += "<li>Low: "+low;
-                everything += "<li>Close: "+closeVal;
-                everything += "<li>Volume: "+volume;
-                everything += "</ul>";
+
+                var everything ="<p><strong>Ready. </strong>Click \"Graph Stock Data\" Below</p>";
                 $("#stockData").html(everything);
-                
+
            } //End of For Loop
-            
-            
+
+           graphData.reverse();
             //These were taken directly from the chartjs developers
             //http://www.chartjs.org/docs/latest/developers/updates.html
-            
+/*
             //CLEAR THE CHART
             function removeData(chart) {
                 console.log("DATA LABELS: " + chart.data.labels)
@@ -106,8 +104,8 @@
             });
             chart.update();
             }
-           
-            
+
+
             //PUSH THE DATA TO THE CHART
             function addData(chart, label, data) {
                 chart.data.labels.push(label);
@@ -116,16 +114,16 @@
                 });
             chart.update();
             }
-            
-            console.log(graphData.size())
+
+            //console.log(graphData.size())
             var ctx = document.getElementById("myChart");
             removeData(ctx);
-            for (i = 0; i < graphData.size(); i++){
-                addData(ctx,graphData['date'],graphData['open']);
-            }
-            
-            
-            
+            //for (i = 0; i < graphData.size(); i++){
+              //  addData(ctx,graphData['date'],graphData['open']);
+            //}*/
+
+
+
         } //End of AJAX-SUCCESS
       }); //End of AJAX
     });
@@ -145,33 +143,128 @@ Enter A Stock Ticker: <br/>
 <input class="w3-input" id="tickerButton" type="submit" value="Submit">
 </form>
 
-<div class="w3-display-container" id="stockData">No info</div>
-    
-    
-<canvas id="myChart" width="100px" height="80px"></canvas>
-    
-    <!--The script for the chart has to be AFTER the chart is initialized-->
-    <script>
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var chart = new Chart(ctx, {
-            //Type of chart we want to create
-            type: 'line',
-            
-            //Data for the dataset
-            data: {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
-            datasets: [{
-                label: "My First dataset",
-                backgroundColor: 'rgb(255, 99, 132)',
-                bordercolor: 'rgb(255, 99, 132)',
-                data: [10,10,10,10,10,10,10],
-                }]
-            },
-            //Configuration options
-            options:{}
-        });
-    </script> <!--End of chart script-->
+<div  id="stockData">No info</div>
 
 
+
+<div style="width:75%;">
+  <canvas id="canvas"></canvas>
+</div>
+<br>
+<br>
+<button id="graphStockData">Graph Stock Data</button>
+<button id="removeData">Remove Data</button>
+<script>
+console.log(graphData);
+  var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  var config = {
+      type: 'line',
+      data: {
+          labels: [],
+          datasets: [{
+              label: "Opening Value of Stock",
+              backgroundColor: window.chartColors.blue,
+              borderColor: window.chartColors.blue,
+              data: [
+                  //randomScalingFactor(),
+                  //randomScalingFactor(),
+                  //randomScalingFactor(),
+                  //randomScalingFactor(),
+                  //randomScalingFactor(),
+                  //randomScalingFactor(),
+                  //randomScalingFactor()
+              ],
+              fill: false,
+          }]
+      },
+      options: {
+          responsive: true,
+          title:{
+              display:true,
+              text:'Stock Graph'
+          },
+          tooltips: {
+              mode: 'index',
+              intersect: false,
+          },
+          hover: {
+              mode: 'nearest',
+              intersect: true
+          },
+          scales: {
+              xAxes: [{
+                  display: true,
+                  scaleLabel: {
+                      display: true,
+                      labelString: 'Date'
+                  }
+              }],
+              yAxes: [{
+                  display: true,
+                  scaleLabel: {
+                      display: true,
+                      labelString: 'Value'
+                  }
+              }]
+          }
+      }
+  };
+
+  window.onload = function() {
+      var ctx = document.getElementById("canvas").getContext("2d");
+      window.myLine = new Chart(ctx, config);
+  };
+
+
+  document.getElementById('graphStockData').addEventListener('click', function() {
+    console.log("size= "+ graphData.length);
+    /*for (i = 0; i < graphData.size(); i++){
+        addData(ctx,graphData['date'],graphData['open']);
+}*/
+
+for (var i = 0; i < graphData.length; i++) {
+  config.data.labels.push(graphData[i]['date']);
+}
+
+
+if (config.data.datasets.length > 0) {
+    config.data.datasets.forEach(function(dataset) {
+      for (var i = 0; i < graphData.length; i++) {
+        dataset.data.push(graphData[i]['openAmt']);
+      }
+
+
+
+    });
+
+    window.myLine.update();
+}
+  });
+
+
+
+  var colorNames = Object.keys(window.chartColors);
+  /*
+  document.getElementById('addDataset').addEventListener('click', function() {
+      var colorName = colorNames[config.data.datasets.length % colorNames.length];
+      var newColor = window.chartColors[colorName];
+      var newDataset = {
+          label: 'Dataset ' + config.data.datasets.length,
+          backgroundColor: newColor,
+          borderColor: newColor,
+          data: [],
+          fill: false
+      };
+
+      for (var index = 0; index < config.data.labels.length; ++index) {
+          newDataset.data.push(randomScalingFactor());
+      }
+
+      config.data.datasets.push(newDataset);
+      window.myLine.update();
+  });
+*/
+</script>
+<button id="target">Refresh</button>
 </body>
 </html>
