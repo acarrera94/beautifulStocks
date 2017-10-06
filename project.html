@@ -63,9 +63,9 @@ var graphData = [];
         success : function(parsed_json) {
             var loopDate = LocalDate.now();
 
-            var numberOfDays = 3;
+            var numberOfDays = 5;
             for (i = 0; i < numberOfDays; i++ ){
-                loopDate = loopDate.minusDays(1);
+
                 console.log("DAYS minus 1: " + loopDate);
                 //console.log(dateString);
                 console.log(myurl);
@@ -88,7 +88,7 @@ var graphData = [];
 
                 var everything ="<p><strong>Ready. </strong>Click \"Graph Stock Data\" Below</p>";
                 $("#stockData").html(everything);
-
+                loopDate = loopDate.minusDays(1);
            } //End of For Loop
 
            graphData.reverse();
@@ -137,7 +137,6 @@ var graphData = [];
 <body>
 
 <form class="w3-container">
-    <label>Choose Stock</label>
 Enter A Stock Ticker: <br/>
 <input type="text" id="tickerField" value=""><br>
 <input class="w3-input" id="tickerButton" type="submit" value="Submit">
