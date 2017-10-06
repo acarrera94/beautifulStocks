@@ -27,12 +27,14 @@
     </script>
     
     <!--Joda Time-->
+    <!--CHEATSHEET:  https://github.com/js-joda/js-joda/blob/HEAD/CheatSheet.md-->
     <script src="node_modules/js-joda/dist/js-joda.min.js"></script>
     
     <!--Chart script-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-    <!--script src="node_modules/chartjs/dist/Chart.js"></script-->
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script-->
+    <script src="node_modules/chart.js/dist/Chart.js"></script>
 
+    
 
 
 <script>
@@ -57,7 +59,7 @@
         success : function(parsed_json) {
             var loopDate = LocalDate.now();
             var graphData = [];
-            var numberOfDays = 5
+            var numberOfDays = 2
             for (i = 0; i < numberOfDays; i++ ){
                 loopDate = loopDate.minusDays(1); 
                 console.log("DAYS minus 1: " + loopDate);
@@ -90,6 +92,40 @@
                 $("#stockData").html(everything);
                 
            } //End of For Loop
+            
+            
+            //These were taken directly from the chartjs developers
+            //http://www.chartjs.org/docs/latest/developers/updates.html
+            
+            //CLEAR THE CHART
+            function removeData(chart) {
+                console.log("DATA LABELS: " + chart.data.labels)
+            chart.data.labels.pop();
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.pop();
+            });
+            chart.update();
+            }
+           
+            
+            //PUSH THE DATA TO THE CHART
+            function addData(chart, label, data) {
+                chart.data.labels.push(label);
+                chart.data.datasets.forEach((dataset) => {
+                    dataset.data.push(data);
+                });
+            chart.update();
+            }
+            
+            console.log(graphData.size())
+            var ctx = document.getElementById("myChart");
+            removeData(ctx);
+            for (i = 0; i < graphData.size(); i++){
+                addData(ctx,graphData['date'],graphData['open']);
+            }
+            
+            
+            
         } //End of AJAX-SUCCESS
       }); //End of AJAX
     });
