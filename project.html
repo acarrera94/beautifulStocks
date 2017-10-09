@@ -54,28 +54,45 @@ var graphData = [];
       myurl += "&apikey=" + APIkey;
       console.log(myurl);
       var LocalDate = JSJoda.LocalDate;
-      console.log("JS JODA DATE " + LocalDate.now())
-
-
+      
       $.ajax({
         url : myurl,
         dataType : "json",
         success : function(parsed_json) {
-            var loopDate = LocalDate.now();
-
-            var numberOfDays = 5;
+            //var loopDate = LocalDate.now();
+            var start = new LocalDate(2017,10,01);
+            var end = LocalDate.now();
+            console.log("START: " + start);
+            console.log("END: " + end);
+            
+            var weekday = start;
+            
+            var numberOfDays = end.toEpochDay() - start.toEpochDay();
+            console.log("NUMBER OF DAYS: " + numberOfDays);
             for (i = 0; i < numberOfDays; i++ ){
-
-                console.log("DAYS minus 1: " + loopDate);
+                
+                if (weekday.toEpochDay() > end.toEpochDay()) {break;}
+                console.log("DAY OF WEEK: " + weekday.dayOfWeek());
+                if (weekday.dayOfWeek() == "SATURDAY" || weekday.dayOfWeek() == "SUNDAY"){
+                    //console.log("This entered the for loop");
+                    do {
+                        //console.log("This entered the do loop");
+                        weekday = weekday.plusDays(1);     
+                    }
+                    while (weekday.dayOfWeek() == "SATURDAY" || weekday.dayOfWeek() == "SUNDAY")
+                }
+                
+                
+                console.log("DAY REVISED: " + weekday);
                 //console.log(dateString);
                 console.log(myurl);
-                var open = parsed_json['Time Series (Daily)'][loopDate.toString()]["1. open"]
-                var high = parsed_json['Time Series (Daily)'][loopDate.toString()]["2. high"]
-                var low = parsed_json['Time Series (Daily)'][loopDate.toString()]["3. low"]
-                var closeVal = parsed_json['Time Series (Daily)'][loopDate.toString()]["4. close"]
-                var volume = parsed_json['Time Series (Daily)'][loopDate.toString()]["5. volume"]
+                var open = parsed_json['Time Series (Daily)'][weekday.toString()]["1. open"]
+                var high = parsed_json['Time Series (Daily)'][weekday.toString()]["2. high"]
+                var low = parsed_json['Time Series (Daily)'][weekday.toString()]["3. low"]
+                var closeVal = parsed_json['Time Series (Daily)'][weekday.toString()]["4. close"]
+                var volume = parsed_json['Time Series (Daily)'][weekday.toString()]["5. volume"]
                 var dataToPush = {
-                    'date': loopDate.toString(),
+                    'date': weekday.toString(),
                     'openAmt' : open,
                     'highAmt': high,
                     'lowAmt': low,
@@ -88,10 +105,17 @@ var graphData = [];
 
                 var everything ="<p><strong>Ready. </strong>Click \"Graph Stock Data\" Below</p>";
                 $("#stockData").html(everything);
-                loopDate = loopDate.minusDays(1);
+               
+                if (weekday.dayOfWeek() == "FRIDAY")
+                    weekday = weekday.plusDays(3);
+                else
+                    weekday = weekday.plusDays(1);
+                    
+                    
+               
            } //End of For Loop
 
-           graphData.reverse();
+           //graphData.reverse(); //The array no longer needs to be reversed.
             //These were taken directly from the chartjs developers
             //http://www.chartjs.org/docs/latest/developers/updates.html
 /*
