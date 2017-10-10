@@ -54,35 +54,35 @@ var graphData = [];
       myurl += "&apikey=" + APIkey;
       console.log(myurl);
       var LocalDate = JSJoda.LocalDate;
-      
+
       $.ajax({
         url : myurl,
         dataType : "json",
         success : function(parsed_json) {
             //var loopDate = LocalDate.now();
-            var start = new LocalDate(2017,10,01);
+            var start = new LocalDate(2017,07,07);
             var end = LocalDate.now();
             console.log("START: " + start);
             console.log("END: " + end);
-            
+
             var weekday = start;
-            
+
             var numberOfDays = end.toEpochDay() - start.toEpochDay();
             console.log("NUMBER OF DAYS: " + numberOfDays);
             for (i = 0; i < numberOfDays; i++ ){
-                
+
                 if (weekday.toEpochDay() > end.toEpochDay()) {break;}
                 console.log("DAY OF WEEK: " + weekday.dayOfWeek());
                 if (weekday.dayOfWeek() == "SATURDAY" || weekday.dayOfWeek() == "SUNDAY"){
                     //console.log("This entered the for loop");
                     do {
                         //console.log("This entered the do loop");
-                        weekday = weekday.plusDays(1);     
+                        weekday = weekday.plusDays(1);
                     }
                     while (weekday.dayOfWeek() == "SATURDAY" || weekday.dayOfWeek() == "SUNDAY")
                 }
-                
-                
+
+
                 console.log("DAY REVISED: " + weekday);
                 //console.log(dateString);
                 console.log(myurl);
@@ -105,14 +105,14 @@ var graphData = [];
 
                 var everything ="<p><strong>Ready. </strong>Click \"Graph Stock Data\" Below</p>";
                 $("#stockData").html(everything);
-               
+
                 if (weekday.dayOfWeek() == "FRIDAY")
                     weekday = weekday.plusDays(3);
                 else
                     weekday = weekday.plusDays(1);
-                    
-                    
-               
+
+
+
            } //End of For Loop
 
            //graphData.reverse(); //The array no longer needs to be reversed.
